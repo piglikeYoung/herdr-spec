@@ -221,7 +221,7 @@ test("同仓库互斥：别的变更在跑就挡住，自己那条不算", () =>
 
 test("版本号从 0.1.0 开始，右下角显示的就是它", () => {
   assert.match(VERSION, /^0\.\d+\.\d+$/, "semver 形状");
-  assert.equal(VERSION, "0.1.0");
+  assert.equal(VERSION, "0.1.1");
 });
 
 test("探索未归档的变更一直在，归档只在全部勾完后出现", () => {

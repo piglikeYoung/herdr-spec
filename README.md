@@ -38,6 +38,18 @@ node scripts/install.mjs --uninstall   # 删 mod、tabs 副本、版面、快捷
 
 面板读的是**各项目自己的** `openspec/` 目录，没有全局状态要迁移；在新设备上打开同一个项目目录即可看到同样的看板。
 
+### Herdr 升级后
+
+版面（`layouts/specs.json`）和 `mods/tabs-specs` 副本是**生成物**：从安装时的 Herdr 官方模板生成，里面盖了当时的版本戳。Herdr 升级后官方模板可能变了，副本不会自己跟着变——面板启动时会对比版本戳与运行版本，不一致就弹一次警告提醒你重生成。
+
+要做的只有一步：
+
+```bash
+node scripts/install.mjs        # 重新生成 tabs-specs 与 specs 版面，对齐新 Herdr
+```
+
+`--check` 可先看是否需要。**mod 本体（`mods/herdr-spec/`）不用重新生成**——它不随 Herdr 版本变化；例外是升级若改了 mod API，面板代码才需要跟进（会有加载报错，按报错改）。
+
 ### 为什么要复制一份 tabs
 
 官方 `mods/tabs/main.js` 末尾把面板按钮写死了，只有两行：

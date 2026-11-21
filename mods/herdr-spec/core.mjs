@@ -11,7 +11,7 @@
  * 面板自己的版本，右下角显示。从 0.1.0 开始：
  * 小改动（按钮、文案、修 bug）末位 +1；重构页面或内容结构，中位 +1。
  */
-export const VERSION = "0.1.0";
+export const VERSION = "0.1.1";
 
 export const STATUSES = ["in-progress", "no-tasks", "complete"];
 
