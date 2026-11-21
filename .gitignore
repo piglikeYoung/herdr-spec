@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.vite/
+# herdr-app check 生成的类型文件
+mods/*/gpui-kit.d.ts
+mods/*/jsconfig.json
