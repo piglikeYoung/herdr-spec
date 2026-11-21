@@ -11,7 +11,7 @@
  * 面板自己的版本，右下角显示。从 0.1.0 开始：
  * 小改动（按钮、文案、修 bug）末位 +1；重构页面或内容结构，中位 +1。
  */
-export const VERSION = "0.1.1";
+export const VERSION = "0.1.2";
 
 export const STATUSES = ["in-progress", "no-tasks", "complete"];
 
@@ -349,22 +349,22 @@ export function verdictWriteCmd(root, change) {
 /**
  * agent 收到的第一句话。
  *
- * 探索明确「不要改文件」，执行照 OpenSpec 自己的 apply 指令走，
- * 验证是只读的三维度检查（完整性/正确性/一致性），分级出报告。
- * 不在这里复述上下文——instructions 本身就是上下文，重复一遍只会让
- * agent 先读我们猜的东西。
+ * 探索明确「不要改文件」并约定报告结构；执行是唯一会改文件的档，带三条纪律
+ * （不扩范围、逐项勾选、含糊处停下来问）；验证要可执行证据而不是纯阅读印象；
+ * 归档遇 delta 与主规格冲突要先问。上下文一律交给 OpenSpec 的 instructions，
+ * 这里不复述——instructions 本身就是上下文，重复一遍只会让 agent 先读我们猜的东西。
  */
 export function promptFor(kind, name) {
   if (kind === "explore") {
-    return `运行 openspec instructions apply --change ${name} 读这份变更的上下文，然后给出实现计划、影响面与风险。先不要修改任何文件，也不要勾选任务。`;
+    return `运行 openspec instructions apply --change ${name} 读这份变更的上下文，然后按这个结构给出：剩余工作盘点 → 实现计划 → 影响面 → 风险 → 建议的下一步。如果发现文档之间、或文档与代码已有出入，明确指出。先不要修改任何文件，也不要勾选任务。`;
   }
   if (kind === "archive") {
-    return `运行 openspec instructions archive --change ${name} 并按它执行。`;
+    return `运行 openspec instructions archive --change ${name} 并按它执行。如果 delta 与主规格对同一个 Requirement 有冲突，先停下来问我怎么取舍，再继续。`;
   }
   if (kind === "verify") {
-    return `运行 openspec instructions apply --change ${name} 读这份变更的完整上下文，然后对照实际实现做三维度只读检查：\n1. 完整性——tasks.md 的每一项是否真的完成（不是只勾了框）；\n2. 正确性——实现是否符合 proposal.md 的承诺与 design.md 的决策；\n3. 一致性——specs delta 的每个 Requirement/Scenario 是否与代码实际行为一致（没有 delta spec 的部分按行为检查替代）。\n输出分级报告：CRITICAL（必须修复才能归档）/ WARNING（建议修复）/ SUGGESTION（可选优化），每个发现给出文件、行号与具体建议；没有阻塞问题就明确说「可以归档」。只读检查，不要修改任何文件，也不要勾选任务。`;
+    return `运行 openspec instructions apply --change ${name} 读这份变更的完整上下文，然后对照实际实现做三维度只读检查：\n1. 完整性——tasks.md 的每一项是否真的完成（不是只勾了框）；\n2. 正确性——实现是否符合 proposal.md 的承诺与 design.md 的决策；\n3. 一致性——specs delta 的每个 Requirement/Scenario 是否与代码实际行为一致（没有 delta spec 的部分按行为检查替代）。\n优先用可执行的证据：跑测试、构建或项目自测命令，引用其输出作为依据。输出分级报告：CRITICAL（必须修复才能归档）/ WARNING（建议修复）/ SUGGESTION（可选优化），每个发现给出文件、行号与具体建议；CRITICAL 必须附证据（可复现步骤或失败输出），不能只凭阅读下结论。没有阻塞问题就明确说「可以归档」。只读检查，不要修改任何文件，也不要勾选任务。`;
   }
-  return `运行 openspec instructions apply --change ${name} 并按它执行，做完的项在 tasks.md 里勾上。`;
+  return `运行 openspec instructions apply --change ${name} 并按它执行，做完的项在 tasks.md 里勾上。三条纪律：严格按 tasks.md 的项做，没有的不要顺手做；每完成一项立即勾选再做下一项；遇到含糊、文档互相冲突或与实际不符的地方，停下来问我，不要自行猜测。`;
 }
 
 /**

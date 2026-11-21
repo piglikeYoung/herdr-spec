@@ -174,11 +174,15 @@ test("探索只说不要改文件，执行/归档各自照官方 instructions �
   const explore = promptFor("explore", "add-csv-export");
   assert.match(explore, /openspec instructions apply --change add-csv-export/);
   assert.match(explore, /不要修改任何文件/);
+  assert.match(explore, /剩余工作盘点/, "探索报告有结构约定");
   const apply = promptFor("apply", "add-csv-export");
   assert.match(apply, /openspec instructions apply --change add-csv-export/);
   assert.doesNotMatch(apply, /不要修改任何文件/);
+  assert.match(apply, /停下来问我/, "执行档的三条纪律：含糊处不自行猜测");
+  assert.match(apply, /没有的不要顺手做/, "执行档不扩大范围");
   const archive = promptFor("archive", "add-csv-export");
   assert.match(archive, /openspec instructions archive --change add-csv-export/, "归档交给 LLM 收尾");
+  assert.match(archive, /停下来问我/, "归档遇 delta 冲突先问再动");
 });
 
 test("标签按 address 贴到 agent 上，没有标签的归 null", () => {
@@ -221,7 +225,7 @@ test("同仓库互斥：别的变更在跑就挡住，自己那条不算", () =>
 
 test("版本号从 0.1.0 开始，右下角显示的就是它", () => {
   assert.match(VERSION, /^0\.\d+\.\d+$/, "semver 形状");
-  assert.equal(VERSION, "0.1.1");
+  assert.equal(VERSION, "0.1.2");
 });
 
 test("探索未归档的变更一直在，归档只在全部勾完后出现", () => {
@@ -249,6 +253,8 @@ test("验证：prompt 是只读三维度检查；结论写在变更目录里，v
   assert.match(p, /一致性/);
   assert.match(p, /CRITICAL/);
   assert.match(p, /不要修改任何文件/, "验证只读");
+  assert.match(p, /跑测试、构建或项目自测命令/, "验证要可执行证据");
+  assert.match(p, /不能只凭阅读下结论/, "CRITICAL 必须附证据");
   // 结论跟着变更走：watchFolder 会为它触发刷新，远端也生效，归档时一并进 archive。
   const path = verdictPathFor("/Users/pix/Downloads/herdr-spec-demo", "demo-verify-me");
   assert.equal(path, "/Users/pix/Downloads/herdr-spec-demo/openspec/changes/demo-verify-me/.verify.json");
